@@ -67,10 +67,10 @@ void TimeTable::generateTable()
 				}
 				
 				htmlFile <<
-					"				<td class=\'" + day[i].code + ld[j].start + " font\'>" + ld[j].subject + "</td>\n"
-					"				<td class=\'" + day[i].code + ld[j].start + " font\'>" + base12(ld[j].start) + "</td>\n"
-					"				<td class=\'" + day[i].code + ld[j].start + " font\'>" + base12(ld[j].finish) + "</td>\n"
-					"				<td class=\'" + day[i].code + ld[j].start + " font\'>" + ld[j].place + "</td>\n";
+					"				<td class=\'" + day[i].code + ld[j].start + " font " + to_string(stoi(day[i].code) + 10) + "\'>" + ld[j].subject + "</td>\n"
+					"				<td class=\'" + day[i].code + ld[j].start + " font " + to_string(stoi(day[i].code) + 10) + "\'>" + base12(ld[j].start) + "</td>\n"
+					"				<td class=\'" + day[i].code + ld[j].start + " font " + to_string(stoi(day[i].code) + 10) + "\'>" + base12(ld[j].finish) + "</td>\n"
+					"				<td class=\'" + day[i].code + ld[j].start + " font " + to_string(stoi(day[i].code) + 10) + "\'>" + ld[j].place + "</td>\n";
 			}
 			htmlFile <<
 				"			</tr>\n";
@@ -83,7 +83,7 @@ void TimeTable::generateTable()
 
 	htmlFile <<
 		"<script>\n"
-		"setInterval(myTimer, 1000);var third = \"" + Color::third + "\"; var fourth = \"" + Color::fourth + "\"; var first = \"" + Color::first + "\"; var d = new Date(); tday = new Array('Sunday', \"Monday\", \"Tuesday\", \"Wednesday\", \"Thursday\", \"Friday\", \"Saturday\"); var t = d.toLocaleTimeString(); var day = d.getDay(); var hours = d.getHours() + d.getMinutes() / 100; function daySelector() { var galleries = document.getElementsByClassName(day); var len = galleries.length; for (var i = 0; i < len; i++) { galleries[i].style.backgroundColor = third; } }"
+		"setInterval(myTimer, 1000);var second = '"+Color::fourth+"';var third = '"+Color::third+"'; var fourth = '"+Color::fourth+"'; var first = '"+Color::first+"'; var d = new Date(); tday = new Array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'); var t = d.toLocaleTimeString(); var day = d.getDay(); var hours = d.getHours() + d.getMinutes() / 100; function daySelector() { var galleries = document.getElementsByClassName(day); var len = galleries.length; for (var i = 0; i < len; i++) { galleries[i].style.backgroundColor = third; } var it = 0; while (document.getElementsByClassName(day + 10)[it]) document.getElementsByClassName(day + 10)[it++].style.color = second; }"
 		"\nfunction myTimer() {\n"
 		"	var sDate = new Date();\n";
 
@@ -103,7 +103,7 @@ void TimeTable::generateTable()
 				start = changeTime(changeToProperTime(ld[j].start));
 				finish = changeTime(changeToProperTime(ld[j].finish));
 				htmlFile <<
-					"		if (hours >= " + to_string(start) + " && hours <= " + to_string(finish) + ") {\n"
+					"		if (hours >= " + to_string(start) + " && hours < " + to_string(finish) + ") {\n"
 					"			document.getElementById(\'" + day[i].code + ld[j].start + "\').style.backgroundColor = fourth;\n"
 					"			for (var i = 0; i < 4; i++)\n"
 					"				document.getElementsByClassName(\"" + day[i].code + ld[j].start + " font\")[i].style.color = first;\n"
