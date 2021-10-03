@@ -3,7 +3,7 @@
 #include <mysql.h>
 #include "resources.h"
 #include "Color.h"
-
+#include "Lecture.h"
 using namespace std;
 class TimeTable : private Color
 {
@@ -28,6 +28,8 @@ protected:
 
 	// get number of tables, for some improvments
 	int getNumberOfTables();
+
+	int getNextTableID();
 public:
 	void selectTable();
 

@@ -74,7 +74,8 @@ void Program::timeTableScreen()
 	}
 	cout << 
 		"1) Select Table.\n"
-		"2) New Table.\n";
+		"2) New Table.\n"
+		"3) Delete Table.\n";
 
 	int choice = 0;
 	cout << "[?]> "; cin >> choice;
@@ -90,6 +91,9 @@ void Program::timeTableScreen()
 		TimeTable::newTable();
 		Lecture::assignDefaultValues(conn, User::ID, TimeTable::tableID);
 		editTimeTable();
+		break;
+	case 3:
+		TimeTable::deleteTable();
 		break;
 	default:
 		timeTableScreen();

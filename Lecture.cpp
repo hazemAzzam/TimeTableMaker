@@ -89,8 +89,28 @@ void Lecture::deleteLecture()
 	else 
 	{
 		cout << "Error. (304)\n";
+		cout << query << endl;
 	}
 	system("pause");
+}
+
+void Lecture::deleteLectures(int id)
+{
+	string query =
+		"DELETE FROM Lecture "
+		"WHERE user_id = " + to_string(userID) + " and table_id = " + to_string(id) + ";";
+	const char* q = query.c_str();
+	int qstate = mysql_query(conn, q);
+	if (!qstate)
+	{
+		// do no thing
+	}
+	else
+	{
+		cout << "Error. (306)\n";
+		cout << query << endl;
+		system("pause");
+	}
 }
 
 void Lecture::displayAllLectures()
@@ -155,13 +175,14 @@ int Lecture::getNextLectureID()
 void Lecture::addLecturesFromFile()
 {
 	cout << "--> Add Lectures from file\n## DAY SUBJECT START FINISH PLACE, each in new line.\n\n";
-	lectureID = getNextLectureID();
+	
 	string fileName;
 	cout << "--> File Name: "; cin >> fileName;
 	ifstream file(fileName);
 	string data[5];
-	while (!file.eof()) {
-		for (int i = 0; i < 5; i++) {
+	while (getline(file, data[0])) {
+		lectureID = getNextLectureID();
+		for (int i = 1; i < 5; i++) {
 			getline(file, data[i]);
 		}
 		string query =
