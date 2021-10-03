@@ -22,13 +22,13 @@ void TimeTable::generateTable()
 		{"THU", "4"},
 		{"FRI", "5"}
 	};
-	ofstream htmlFile("table.html");
+	ofstream htmlFile(title + ".html");
 	htmlFile << "<!DOCTYPE html>\n<html>\n";
-	htmlFile << "	<head><meta charset='UTF - 8' />\n";
-	htmlFile << "	<style id='webmakerstyle'>:root { --first: " + Color::first + "; --second: " + Color::second + "; --third: " + Color::third + "; --font-color: " + Color::fourth + "; } #body { text-align: center; background-color: var(--first); font-size: 20px; font-family: sans-serif; } table { left: 50%; top: 50%; transform: translate(-50%, -50%); background-color: var(--first); border-collapse: collapse; color: var(--font-color); table-layout: auto; position: absolute; width: 100%; } th { background-color: var(--second); padding: 20px; } td { font-size: 20px; padding: 7px; height: 50px; } tr:nth-child(3n + 5) { border-bottom: 1px solid #512b58; }</style>\n";
+	htmlFile << "	<head><meta charset='UTF-8' /><meta name='viewport' content='width = device - width, initial - scale = 1' /> \n";
+	htmlFile << "	<style id='webmakerstyle'>:root { --first: " + Color::first + "; --second: " + Color::second + "; --third: " + Color::third + "; --font-color: " + Color::fourth + "; } #body { text-align: center; background-color: var(--first); font-size: 20px; font-family: sans-serif; } table { left: 50%; top: 50%; transform: translate(-50%, -50%); background-color: var(--first); border-collapse: collapse; color: var(--font-color); table-layout: auto; position: absolute; width: 100%; } th { background-color: var(--second); padding: 20px; } td { font-size: 20px; padding: 7px; height: 50px; }</style>\n";
 	htmlFile << "	</head>\n";
 	htmlFile <<
-		"	<body id='body'>"
+		"	<body id='body'>\n"
 		"		<table id='table'>\n"
 		"			<caption id='cb'>" + TimeTable::title + "</caption>\n"
 		"			<tr>\n"
@@ -72,6 +72,8 @@ void TimeTable::generateTable()
 					"				<td class=\'" + day[i].code + ld[j].start + " font\'>" + base12(ld[j].finish) + "</td>\n"
 					"				<td class=\'" + day[i].code + ld[j].start + " font\'>" + ld[j].place + "</td>\n";
 			}
+			htmlFile <<
+				"			</tr>\n";
 		}
 	}
 	htmlFile <<
@@ -81,7 +83,7 @@ void TimeTable::generateTable()
 
 	htmlFile <<
 		"<script>\n"
-		"setInterval(myTimer, 1000); var third = \"" + Color::third + "\"; var fourth = \"" + Color::fourth + "\"; var first = \"" + Color::first + "\"; var d = new Date(); tday = new Array('Sunday', \"Monday\", \"Tuesday\", \"Wednesday\", \"Thursday\", \"Friday\", \"Saturday\"); var t = d.toLocaleTimeString(); var day = d.getDay(); var hours = d.getHours() + d.getMinutes() / 100; function daySelector() { var galleries = document.getElementsByClassName(day); var len = galleries.length; for (var i = 0; i < len; i++) { galleries[i].style.backgroundColor = third; } }"
+		"setInterval(myTimer, 1000);var third = \"" + Color::third + "\"; var fourth = \"" + Color::fourth + "\"; var first = \"" + Color::first + "\"; var d = new Date(); tday = new Array('Sunday', \"Monday\", \"Tuesday\", \"Wednesday\", \"Thursday\", \"Friday\", \"Saturday\"); var t = d.toLocaleTimeString(); var day = d.getDay(); var hours = d.getHours() + d.getMinutes() / 100; function daySelector() { var galleries = document.getElementsByClassName(day); var len = galleries.length; for (var i = 0; i < len; i++) { galleries[i].style.backgroundColor = third; } }"
 		"\nfunction myTimer() {\n"
 		"	var sDate = new Date();\n";
 
@@ -98,10 +100,10 @@ void TimeTable::generateTable()
 				vector<LectureData> ld(numberOfLectures);	
 				getLectureDataInDay(conn, userID, tableID, day[i].name, ld);
 				float start, finish;
-				start = changeToProperTime(ld[j].start);
-				finish = changeToProperTime(ld[j].finish);
+				start = changeTime(changeToProperTime(ld[j].start));
+				finish = changeTime(changeToProperTime(ld[j].finish));
 				htmlFile <<
-					"		if (hours >=" + to_string(start) + "&& hours <=" + to_string(finish) + ") {\n"
+					"		if (hours >= " + to_string(start) + " && hours <= " + to_string(finish) + ") {\n"
 					"			document.getElementById(\'" + day[i].code + ld[j].start + "\').style.backgroundColor = fourth;\n"
 					"			for (var i = 0; i < 4; i++)\n"
 					"				document.getElementsByClassName(\"" + day[i].code + ld[j].start + " font\")[i].style.color = first;\n"
@@ -262,7 +264,7 @@ void TimeTable::newTable()
 {
 	cout << "--> Create new TimeTable <--\n";
 	cout << "Title: "; cin.ignore(); getline(cin, title);
-	tableID = getNumberOfTables() + 1;
+	tableID = getNextTableID();
 	string query =
 		"INSERT INTO TTABLE "
 		"VALUES"
@@ -277,6 +279,7 @@ void TimeTable::newTable()
 	}
 	else {
 		cout << "Error. (204)\n";
+		cout << query << endl;
 		system("pause");
 	}
 }
@@ -300,11 +303,44 @@ int TimeTable::getNumberOfTables()
 		system("pause");
 	}
 }
+int TimeTable::getNextTableID()
+{
+	string query =
+		"SELECT table_id "
+		"from ttable "
+		"where user_id = " + to_string(userID) + " "
+		"order by table_id desc "
+		"limit 1;"
+		;
+	const char* q = query.c_str();
+	int qstate = mysql_query(conn, q);
+	if (!qstate)
+	{
+		res = mysql_store_result(conn);
+		if (row = mysql_fetch_row(res))
+		{
+			return stoi(row[0]) + 1;
+		}
+		return 1;
+	}
+	else
+	{
+		cout << "Error. (207)\n";
+		cout << query << endl;
+		system("pause");
+	}
+}
 void TimeTable::deleteTable()
 {
+	Lecture l;
+	l.assignDefaultValues(conn, userID, 0);
+	showTables();
+	int choice;
+	cout << "\n[?]> "; cin >> choice;
+	l.deleteLectures(choice);
 	string query = 
 		"DELETE FROM TTable "
-		"WHERE table_id = " + to_string(tableID) + " and user_id = " + to_string(userID) + ";";
+		"WHERE table_id = " + to_string(choice) + " and user_id = " + to_string(userID) + ";";
 	const char* q = query.c_str();
 	int qstate = mysql_query(conn, q);
 	if (!qstate)

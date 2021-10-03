@@ -87,12 +87,15 @@ float changeToProperTime(string time)
 	if (reachedToMinutes == false)
 		strMinutes += '0';
 
-	float hours = stoi(strHours);
-	float minutes = stoi(strMinutes);
+	float hours = stof(strHours);
+	float minutes = stof(strMinutes);
 
 	return hours + (minutes / 100);
 }
-
+float changeTime(float t)
+{
+	return t - ((float)(40 + 20) / 100);
+}
 string base12(string time)
 {
 	float hours = changeToProperTime(time);

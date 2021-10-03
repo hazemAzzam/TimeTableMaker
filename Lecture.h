@@ -14,11 +14,14 @@ protected:
 	MYSQL_ROW row;
 	MYSQL_RES* res;
 
-	void assignDefaultValues(MYSQL* connection, int userID, int tableID);
+	
 	int getCountOfLectures();
+
 public:
+	void assignDefaultValues(MYSQL* connection, int userID, int tableID);
 	void addLecture();
 	void deleteLecture();
+	void deleteLectures(int);// delete all lectures of time table id
 	void displayAllLectures();
 	int getNextLectureID();
 	void addLecturesFromFile();
